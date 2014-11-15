@@ -4,10 +4,8 @@ import javax.swing.*;
 
 public class Dessinator extends JFrame {
 
-"ALLO"
 	private static final long serialVersionUID = 7683431635336021745L;
 	JPanel canvas;
-	//test
 	
 	public Dessinator() {
 
