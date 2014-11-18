@@ -1,3 +1,5 @@
+package dessinator;
+
 import java.awt.*;
 
 import javax.swing.*;
@@ -136,9 +138,6 @@ public class Dessinator extends JFrame {
 		return contentPane;
 	}
 
-	public static void main(String[] args) {
-		new Dessinator();
 
-	}
 
 }
