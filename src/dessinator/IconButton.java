@@ -13,33 +13,27 @@ import javax.swing.*;
 public class IconButton extends JPanel {
 
 	JButton button;
-	
+
 	public IconButton(String iconName) {
 		super();
 		this.setLayout(new GridLayout());
 		button = new JButton(getIcon(iconName));
-		button.setPreferredSize(new Dimension(26,26));
-		
+		button.setPreferredSize(new Dimension(26, 26));
+
 		this.add(button);
 	}
 
 	private ImageIcon getIcon(String fileName) {
-		String fullName = "Icons/"+fileName + ".png";
-		URL imageURL = this.getClass().getResource(fullName);
+		String fullName = "icons/" + fileName + ".png";
+		URL imageURL = this.getClass().getClassLoader().getResource(fullName);
 
 		try {
 			Image img = ImageIO.read(imageURL);
 			return new ImageIcon(img);
 		} catch (IOException ex) {
-			
-			
-		}catch (IllegalArgumentException e){
-			System.out.println(fullName);
-			
+		} catch (IllegalArgumentException e) {
 		}
 		return null;
 	}
-	
-	
 
 }
