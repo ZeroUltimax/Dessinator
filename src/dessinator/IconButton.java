@@ -24,7 +24,7 @@ public class IconButton extends JPanel {
 	}
 
 	private ImageIcon getIcon(String fileName) {
-		String fullName = fileName + ".png";
+		String fullName = "Icons/"+fileName + ".png";
 		URL imageURL = this.getClass().getResource(fullName);
 
 		try {
@@ -34,7 +34,7 @@ public class IconButton extends JPanel {
 			
 			
 		}catch (IllegalArgumentException e){
-			System.out.println(this.getClass().getResource(""));
+			System.out.println(fullName);
 			
 		}
 		return null;
