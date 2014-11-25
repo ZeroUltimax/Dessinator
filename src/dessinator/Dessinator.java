@@ -4,22 +4,31 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import Controller.DessinatorController;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class Dessinator extends JFrame {
 
-
 	private static final long serialVersionUID = 7683431635336021745L;
-	JPanel canvas;
+	private DessinatorCanvas canvas;
 
-	public Dessinator() {
+	private Map<String, IconButton> toolbarButtons;
+
+	private IconButton activeButton;
+
+	public Dessinator(DessinatorController dessinatorController) {
 
 		super("Dessinator");
+
+		toolbarButtons = new TreeMap<>();
 
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(800, 600);
 
 		this.setJMenuBar(createMenuBar());
 
-		this.setContentPane(createContentPane());
+		this.setContentPane(createContentPane(dessinatorController));
 
 		this.setVisible(true);
 
@@ -87,57 +96,73 @@ public class Dessinator extends JFrame {
 		return menuBar;
 	}
 
-	private Container createContentPane() {
+	private Container createContentPane(
+			DessinatorController dessinatorController) {
 		JPanel contentPane = new JPanel(new BorderLayout());
 		{
 			JPanel centerPane = new JPanel(new BorderLayout());
 			// JPanel contentPane = new JPanel(new BorderLayout());
 
 			{
-				GridLayout layout = new GridLayout(0, 2, 4 , 4);
-				
+				GridLayout layout = new GridLayout(0, 2, 4, 4);
 
-				JPanel toolbar = new JPanel(layout);
-				
-				toolbar.add(new IconButton("Arrow Select"));
-				toolbar.add(new JPanel());
-				toolbar.add(new IconButton("Oval"));
-				toolbar.add(new IconButton("Rectangle"));
-				toolbar.add(new IconButton("Square Select"));
-				toolbar.add(new IconButton("Square Select"));
-				toolbar.add(new IconButton("Square Select"));
-				toolbar.add(new IconButton("Square Select"));
-				toolbar.add(new IconButton("Square Select"));
-				toolbar.add(new IconButton("Square Select"));
-				
 				JPanel holder = new JPanel();
 
-				holder.add(toolbar);
+				holder.add(createToolbar(layout, dessinatorController));
 
-				centerPane.add(holder,BorderLayout.WEST);
+				centerPane.add(holder, BorderLayout.WEST);
 			}
 			{
-				
-				//JPanel canvasHolder = new JPanel();
 
-				canvas = new DessinatorCanvas();
-				//canvas.setPreferredSize(new Dimension(200, 200));
+				// JPanel canvasHolder = new JPanel();
+				canvas = new DessinatorCanvas(dessinatorController);
+				// canvas.setPreferredSize(new Dimension(200, 200));
 
-				//canvasHolder.add(canvas, BorderLayout.CENTER);
-				
-				centerPane.add(canvas/*Holder*/,BorderLayout.CENTER);
+				// canvasHolder.add(canvas, BorderLayout.CENTER);
+				centerPane.add(getCanvas() /* Holder */ , BorderLayout.CENTER);
 			}
 			contentPane.add(centerPane, BorderLayout.CENTER);
 		}
-//		{
-//			JPanel color = new JPanel();
-//			color.add(new JColorChooser());
-//			contentPane.add(color, BorderLayout.PAGE_END);
-//		}
+		// {
+		// JPanel color = new JPanel();
+		// color.add(new JColorChooser());
+		// contentPane.add(color, BorderLayout.PAGE_END);
+		// }
 
 		return contentPane;
 	}
 
+	private JPanel createToolbar(GridLayout layout, DessinatorController dessinatorController) {
+		JPanel toolbar = new JPanel(layout);
 
+		addIconButton(toolbar, "Arrow Select", dessinatorController);
+		toolbar.add(new JPanel());
+		addIconButton(toolbar, "Oval", dessinatorController);
+		addIconButton(toolbar, "Rectangle", dessinatorController);
+
+		return toolbar;
+	}
+
+	private void addIconButton(JPanel toolbar, String iconName, DessinatorController controller) {
+		IconButton result = new IconButton(iconName, controller);
+
+		toolbarButtons.put(iconName, result);
+		toolbar.add(result);
+	}
+
+	public void setActiveButton(String button) {
+
+		if (this.activeButton != null && this.activeButton.getName() != button) {
+			this.activeButton.setActive(false);
+		}
+
+		this.activeButton = toolbarButtons.get(button);
+		this.activeButton.setActive(true);
+
+	}
+
+	public DessinatorCanvas getCanvas() {
+		return canvas;
+	}
 
 }
