@@ -31,13 +31,17 @@ import javax.swing.ImageIcon;
 import java.awt.Toolkit;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.SpinnerNumberModel;
 
 
 public class ScaleDialog extends JDialog {
 
 	private final JPanel scaleTypePanel = new JPanel();
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private JSpinner spinner_1;
+	private JSpinner HSpinner;
+	private JSpinner VSpinner;
+	private SpinnerNumberModel percentSpinnerModel =
+			new SpinnerNumberModel(new Integer(100), new Integer(0), null, new Integer(1));
 
 	/**
 	 * Launch the application.
@@ -61,11 +65,11 @@ public class ScaleDialog extends JDialog {
 		setAlwaysOnTop(true);
 		setBounds(100, 100, 450, 300);
 		JPanel Content = new JPanel();
-		Content.setBorder(new EmptyBorder(0, 10, 0, 10));
+		Content.setBorder(new EmptyBorder(0, 0, 0, 0));
 		setContentPane(Content);
 		getContentPane().setLayout(new BorderLayout());
 		scaleTypePanel.setLayout(new FlowLayout());
-		scaleTypePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		scaleTypePanel.setBorder(new EmptyBorder(5, 15, 5, 15));
 		getContentPane().add(scaleTypePanel, BorderLayout.NORTH);
 		
 		{
@@ -79,9 +83,10 @@ public class ScaleDialog extends JDialog {
 			scaleTypePanel.add(rdbtnPercentage);
 		}
 		{
-			JRadioButton rdbtnSize = new JRadioButton("Size");
-			buttonGroup.add(rdbtnSize);
-			scaleTypePanel.add(rdbtnSize);
+			JRadioButton rdbtnPixels = new JRadioButton("Pixels");
+			rdbtnPixels.setEnabled(false);
+			buttonGroup.add(rdbtnPixels);
+			scaleTypePanel.add(rdbtnPixels);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -105,7 +110,7 @@ public class ScaleDialog extends JDialog {
 			centerPanel.setLayout(new BorderLayout(0, 0));
 			{
 				JPanel linkPanel = new JPanel();
-				linkPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+				linkPanel.setBorder(new EmptyBorder(0, 0, 0, 15));
 				centerPanel.add(linkPanel, BorderLayout.EAST);
 				GridBagLayout gbl_linkPanel = new GridBagLayout();
 //				gbl_linkPanel.columnWidths = new int[]{0, 0};
@@ -130,7 +135,7 @@ public class ScaleDialog extends JDialog {
 			}
 			{
 				JPanel optionsPanel = new JPanel();
-				optionsPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
+				optionsPanel.setBorder(new EmptyBorder(0, 15, 0, 0));
 				centerPanel.add(optionsPanel, BorderLayout.CENTER);
 				GridBagLayout gbl_optionsPanel = new GridBagLayout();
 //				gbl_optionsPanel.columnWidths = new int[]{125, 125, 125, 0};
@@ -169,9 +174,10 @@ public class ScaleDialog extends JDialog {
 					optionsPanel.add(panel, gbc_panel);
 					panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 					{
-						JSpinner spinner = new JSpinner();
-						spinner.setPreferredSize(new Dimension(50,23));
-						panel.add(spinner);
+						HSpinner = new JSpinner();
+						HSpinner.setModel(percentSpinnerModel);
+						HSpinner.setPreferredSize(new Dimension(50,23));
+						panel.add(HSpinner);
 					}
 				}
 				{
@@ -203,11 +209,12 @@ public class ScaleDialog extends JDialog {
 					gbc_panel.gridy = 1;
 					optionsPanel.add(panel, gbc_panel);
 					{
-						spinner_1 = new JSpinner();
-						spinner_1.setPreferredSize(new Dimension(50,23));
+						VSpinner = new JSpinner();
+						VSpinner.setModel(percentSpinnerModel);
+						VSpinner.setPreferredSize(new Dimension(50,23));
 					}
 					panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-					panel.add(spinner_1);
+					panel.add(VSpinner);
 				}
 			}
 		}
