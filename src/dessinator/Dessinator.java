@@ -26,7 +26,7 @@ public class Dessinator extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(800, 600);
 
-		this.setJMenuBar(createMenuBar());
+		this.setJMenuBar(createMenuBar(dessinatorController));
 
 		this.setContentPane(createContentPane(dessinatorController));
 
@@ -34,7 +34,7 @@ public class Dessinator extends JFrame {
 
 	}
 
-	private JMenuBar createMenuBar() {
+	private JMenuBar createMenuBar(DessinatorController dessinatorController) {
 		JMenuBar menuBar = new JMenuBar();
 		{
 			JMenu fileMenu = new JMenu("File");
@@ -66,7 +66,7 @@ public class Dessinator extends JFrame {
 			{
 				JMenu transform = new JMenu("Transform");
 
-				transform.add(new JMenuItem("Move..."));
+				transform.add(new JMenuItem(dessinatorController.getAction("Move")));
 				transform.add(new JMenuItem("Rotate..."));
 				transform.add(new JMenuItem("Reflect..."));
 				transform.add(new JMenuItem("Scale..."));

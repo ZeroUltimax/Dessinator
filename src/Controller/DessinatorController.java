@@ -1,151 +1,150 @@
 package Controller;
 
-import Model.OvalShape;
-import Model.RectangleShape;
-import Model.ShapeList;
-import java.awt.event.*;
-
-import javax.swing.event.MouseInputListener;
-
+import Actions.NullAction;
+import Model.ShapeModel;
 import dessinator.Dessinator;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.TreeMap;
+import javax.swing.Action;
+import javax.swing.event.MouseInputListener;
 
 public class DessinatorController implements MouseInputListener, ActionListener {
 
-	private ShapeList shapes;
+    private ShapeModel model;
 
-	private Dessinator frame;
+    private Dessinator frame;
 
-	private String currentState;
+    private String currentState;
 
-	private Point down, up;
+    private TreeMap<String, Action> actions; // All actions used by the application
 
-	private boolean dragged;
+    private boolean dragged;
 
-	private DessinatorController() {
-		this.shapes = new ShapeList();
-		this.frame = new Dessinator(this);
-		this.frame.getCanvas().setToDraw(this.shapes);
-		this.setState("Arrow Select");
-	}
+    private DessinatorController() {
+        this.model = new ShapeModel();
+       
+        
+        this.actions = new TreeMap<>();
+        
+        // Create actions here
+        
+        
+        
+        this.frame = new Dessinator(this);
+        this.frame.getCanvas().setToDraw(this.model.getShapes());
+        
+        this.setState("Arrow Select");
+    }
 
-	public static void main(String[] args) {
-		DessinatorController c = new DessinatorController();
+    public static void main(String[] args) {
+        DessinatorController c = new DessinatorController();
+    }
 
-	}
+    private void setState(String state) {
+        this.currentState = state;
+        switch (state) {
+            case "Arrow Select":
+            case "Oval":
+            case "Rectangle":
+                frame.setActiveButton(state);
+        }
+    }
 
-	private void setState(String state) {
-		this.currentState = state;
-		switch (state) {
-			case "Arrow Select":
-			case "Oval":
-			case "Rectangle":
-				frame.setActiveButton(state);
-		}
-	}
+    @Override
+    public void mouseClicked(MouseEvent arg0) {
+    }
 
-	public void mouseClicked(MouseEvent arg0) {
-	}
+    @Override
+    public void mouseEntered(MouseEvent arg0) {
+    }
 
-	public void mouseEntered(MouseEvent arg0) {
-	}
+    @Override
+    public void mouseExited(MouseEvent arg0) {
+    }
 
-	public void mouseExited(MouseEvent arg0) {
-	}
+    @Override
+    public void mousePressed(MouseEvent arg0) {
+        model.setMouseDown(arg0.getPoint());
+    }
 
-	public void mousePressed(MouseEvent arg0) {
-		this.down = arg0.getPoint();
-	}
+    @Override
+    public void mouseReleased(MouseEvent arg0) {
+         model.setMouseUp(arg0.getPoint());
+        this.tryAction();
+    }
 
-	public void mouseReleased(MouseEvent arg0) {
-		this.up = arg0.getPoint();
-		this.tryAction();
-	}
+    @Override
+    public void mouseDragged(MouseEvent arg0) {
+        this.dragged = true;
+        model.setMouseUp(arg0.getPoint());
+        this.drawDrag(arg0.getPoint());
 
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
-		this.dragged = true;
-		this.drawDrag(arg0.getPoint());
+    }
 
-	}
+    @Override
+    public void mouseMoved(MouseEvent arg0) {
+        this.dragged = false;
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		this.dragged = false;
-	}
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+        this.setState(arg0.getActionCommand());
+    }
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		this.setState(arg0.getActionCommand());
-	}
+    private void tryAction() {
+        if (this.dragged) {
+            switch (currentState) {
+                case "Arrow Select":
+                    doSelect(model.getRectangle());
+                    break;
+                case "Oval":
+                    doDrawOval(model.getRectangle());
+                    break;
+                case "Rectangle":
+                    doDrawRectangle(model.getRectangle());
+                    break;
+            }
 
-	private static Rectangle getRectangle(Point a, Point b) {
-		int left = Math.min(a.x, b.x);
-		int up = Math.min(a.y, b.y);
+        }
 
-		int width = Math.abs(a.x - b.x);
-		int height = Math.abs(a.y - b.y);
+        this.frame.getCanvas().setDragRectangle(null);
+        this.dragged = false;
 
-		return new Rectangle(left, up, width, height);
-	}
+        doRepaint();
+    }
 
-	private void tryAction() {
-		doUnselectAll();
-		if (this.dragged) {
-			Rectangle actionRectangle = getRectangle(down, up);
+    private void drawDrag(Point endPoint) {
 
-			switch (currentState) {
-				case "Arrow Select":
-					doSelect(actionRectangle);
-					break;
-				case "Oval":
-					doDrawOval(actionRectangle);
-					break;
-				case "Rectangle":
-					doDrawRectangle(actionRectangle);
-					break;
-			}
+        this.frame.getCanvas().setDragRectangle(model.getRectangle());
 
-		}
+        doRepaint();
 
-		this.frame.getCanvas().setDragRectangle(null);
-		this.dragged = false;
+    }
 
-		doRepaint();
-	}
+    private void doSelect(Rectangle actionRectangle) {
+        model.setSelectedByRectangle();
+    }
 
-	private void drawDrag(Point endPoint) {
+    private void doDrawRectangle(Rectangle actionRectangle) {
+        model.addShape("Rectangle");
+        doRepaint();
+    }
 
-		this.frame.getCanvas().setDragRectangle(getRectangle(down, endPoint));
+    private void doDrawOval(Rectangle actionRectangle) {
+        model.addShape("Oval");
 
-		doRepaint();
+        doRepaint();
+    }
 
-	}
+    private void doRepaint() {
+        this.frame.getCanvas().repaint();
+    }
 
-	private void doUnselectAll() {
-		shapes.setSelected(false);
-	}
-
-	private void doSelect(Rectangle actionRectangle) {
-		shapes.getIntersecting(actionRectangle).setSelected(true);
-	}
-
-	private void doDrawRectangle(Rectangle actionRectangle) {
-		shapes.addLast(new RectangleShape(actionRectangle, Color.yellow));
-
-		doRepaint();
-	}
-
-	private void doDrawOval(Rectangle actionRectangle) {
-		shapes.addLast(new OvalShape(actionRectangle, Color.green));
-
-		doRepaint();
-	}
-
-	private void doRepaint() {
-		this.frame.getCanvas().repaint();
-	}
+    public Action getAction(String actionName) {
+        System.out.println(actions);
+        return actions.getOrDefault(actionName, new NullAction(actionName));
+    }
 
 }
